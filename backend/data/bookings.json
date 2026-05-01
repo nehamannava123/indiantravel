@@ -1,0 +1,12 @@
+[
+  {
+    "packageName": "Golden Triangle",
+    "price": "₹18,000",
+    "customerName": "neha",
+    "email": "neha@gmail.com",
+    "phone": "8217521550",
+    "numberOfPeople": 1,
+    "status": "pending",
+    "createdAt": "2026-05-01T09:04:56.448Z"
+  }
+]

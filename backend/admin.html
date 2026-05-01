@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IndiaTravel Admin - View Submissions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #FF6B35;
+            margin-bottom: 30px;
+        }
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .tab-btn {
+            padding: 15px 30px;
+            background: #1A1A2E;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .tab-btn:hover, .tab-btn.active {
+            background: #FF6B35;
+        }
+        .section {
+            display: none;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .section.active {
+            display: block;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        th {
+            background: #FF6B35;
+            color: white;
+        }
+        tr:hover {
+            background: #f9f9f9;
+        }
+        .status {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        .status-confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+        .empty {
+            text-align: center;
+            color: #6c757d;
+            padding: 40px;
+        }
+        .refresh-btn {
+            background: #FF6B35;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .timestamp {
+            color: #6c757d;
+            font-size: 0.85rem;
+        }
+    </style>
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-plane"></i> IndiaTravel Admin Panel</h1>
+        
+        <div class="tabs">
+            <button class="tab-btn active" onclick="showTab('contacts')">
+                <i class="fas fa-envelope"></i> Contact Submissions
+            </button>
+            <button class="tab-btn" onclick="showTab('bookings')">
+                <i class="fas fa-ticket-alt"></i> Package Bookings
+            </button>
+            <button class="tab-btn" onclick="showTab('newsletter')">
+                <i class="fas fa-newspaper"></i> Newsletter Subscribers
+            </button>
+        </div>
+
+        <!-- Contacts Section -->
+        <div id="contacts" class="section active">
+            <button class="refresh-btn" onclick="loadContacts()">
+                <i class="fas fa-sync"></i> Refresh
+            </button>
+            <table id="contactsTable">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Destination</th>
+                        <th>Message</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="contactsBody">
+                    <tr>
+                        <td colspan="6" class="empty">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Bookings Section -->
+        <div id="bookings" class="section">
+            <button class="refresh-btn" onclick="loadBookings()">
+                <i class="fas fa-sync"></i> Refresh
+            </button>
+            <table id="bookingsTable">
+                <thead>
+                    <tr>
+                        <th>Package</th>
+                        <th>Price</th>
+                        <th>Customer</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingsBody">
+                    <tr>
+                        <td colspan="7" class="empty">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Newsletter Section -->
+        <div id="newsletter" class="section">
+            <button class="refresh-btn" onclick="loadNewsletter()">
+                <i class="fas fa-sync"></i> Refresh
+            </button>
+            <table id="newsletterTable">
+                <thead>
+                    <tr>
+                        <th>Email</th>
+                        <th>Subscribed Date</th>
+                    </tr>
+                </thead>
+                <tbody id="newsletterBody">
+                    <tr>
+                        <td colspan="2" class="empty">Loading...</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Tab functionality
+        function showTab(tabId) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            
+            // Show selected section
+            document.getElementById(tabId).classList.add('active');
+            
+            // Highlight button
+            event.target.classList.add('active');
+            
+            // Load data
+            if (tabId === 'contacts') loadContacts();
+            else if (tabId === 'bookings') loadBookings();
+            else if (tabId === 'newsletter') loadNewsletter();
+        }
+
+        // Load contacts
+        async function loadContacts() {
+            const tbody = document.getElementById('contactsBody');
+            tbody.innerHTML = '<tr><td colspan="6" class="empty">Loading...</td></tr>';
+            
+            try {
+                const response = await fetch('/api/contacts');
+                const data = await response.json();
+                
+                if (data.contacts && data.contacts.length > 0) {
+                    tbody.innerHTML = data.contacts.map(c => `
+                        <tr>
+                            <td>${c.name}</td>
+                            <td>${c.email}</td>
+                            <td>${c.phone}</td>
+                            <td>${c.destination}</td>
+                            <td>${c.message.substring(0, 50)}...</td>
+                            <td class="timestamp">${new Date(c.createdAt).toLocaleString()}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="6" class="empty">No contact submissions yet</td></tr>';
+                }
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="6" class="empty">Error loading data. Make sure backend is running.</td></tr>';
+            }
+        }
+
+        // Load bookings
+        async function loadBookings() {
+            const tbody = document.getElementById('bookingsBody');
+            tbody.innerHTML = '<tr><td colspan="7" class="empty">Loading...</td></tr>';
+            
+            try {
+                const response = await fetch('/api/bookings');
+                const data = await response.json();
+                
+                if (data.bookings && data.bookings.length > 0) {
+                    tbody.innerHTML = data.bookings.map(b => `
+                        <tr>
+                            <td>${b.packageName}</td>
+                            <td>${b.price}</td>
+                            <td>${b.customerName}</td>
+                            <td>${b.email}</td>
+                            <td>${b.phone}</td>
+                            <td><span class="status status-${b.status}">${b.status}</span></td>
+                            <td class="timestamp">${new Date(b.createdAt).toLocaleString()}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="7" class="empty">No bookings yet</td></tr>';
+                }
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="7" class="empty">Error loading data. Make sure backend is running.</td></tr>';
+            }
+        }
+
+        // Load newsletter
+        async function loadNewsletter() {
+            const tbody = document.getElementById('newsletterBody');
+            tbody.innerHTML = '<tr><td colspan="2" class="empty">Loading...</td></tr>';
+            
+            try {
+                const response = await fetch('/api/newsletter');
+                const data = await response.json();
+                
+                if (data.subscribers && data.subscribers.length > 0) {
+                    tbody.innerHTML = data.subscribers.map(n => `
+                        <tr>
+                            <td>${n.email}</td>
+                            <td class="timestamp">${new Date(n.subscribedAt).toLocaleString()}</td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = '<tr><td colspan="2" class="empty">No subscribers yet</td></tr>';
+                }
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="2" class="empty">Error loading data. Make sure backend is running.</td></tr>';
+            }
+        }
+
+        // Add newsletter endpoint to server
+        async function init() {
+            // Create an endpoint for getting newsletter subscribers if it doesn't exist
+            try {
+                await fetch('/api/newsletter', { method: 'GET' });
+            } catch(e) {}
+            
+            // Load contacts by default
+            loadContacts();
+        }
+
+        init();
+    </script>
+</body>
+</html>
