@@ -8,5 +8,15 @@
     "numberOfPeople": 1,
     "status": "pending",
     "createdAt": "2026-05-01T09:04:56.448Z"
+  },
+  {
+    "packageName": "Golden Triangle",
+    "price": "₹18,000",
+    "customerName": "jyothi",
+    "email": "jyothi@gmail.com",
+    "phone": "8971672425",
+    "numberOfPeople": 1,
+    "status": "pending",
+    "createdAt": "2026-05-02T09:13:10.823Z"
   }
 ]

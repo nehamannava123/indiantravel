@@ -716,4 +716,4 @@ backToTopButton.addEventListener('click', () => {
     });
 });
 
-console.log('IndiaTravel.com - Website Loaded Successfully!');
+console.log('Yopad.eu - Website Loaded Successfully!');
