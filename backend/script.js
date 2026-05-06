@@ -1,5 +1,6 @@
+// ===============================
 // IndiaTravel Backend Server
-// Node.js + Express + JSON Storage
+// ===============================
 
 const express = require('express');
 const cors = require('cors');
@@ -9,7 +10,9 @@ const fs = require('fs');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// ====================== DATA PATHS ======================
+// ===============================
+// DATA DIRECTORY
+// ===============================
 
 const DATA_DIR = path.join(__dirname, 'data');
 
@@ -17,13 +20,17 @@ const CONTACTS_FILE = path.join(DATA_DIR, 'contacts.json');
 const BOOKINGS_FILE = path.join(DATA_DIR, 'bookings.json');
 const NEWSLETTER_FILE = path.join(DATA_DIR, 'newsletter.json');
 
-// ====================== CREATE DATA DIRECTORY ======================
+// ===============================
+// CREATE DATA DIRECTORY
+// ===============================
 
 if (!fs.existsSync(DATA_DIR)) {
     fs.mkdirSync(DATA_DIR, { recursive: true });
 }
 
-// ====================== CREATE JSON FILES ======================
+// ===============================
+// CREATE JSON FILES
+// ===============================
 
 if (!fs.existsSync(CONTACTS_FILE)) {
     fs.writeFileSync(CONTACTS_FILE, JSON.stringify([]));
@@ -37,27 +44,34 @@ if (!fs.existsSync(NEWSLETTER_FILE)) {
     fs.writeFileSync(NEWSLETTER_FILE, JSON.stringify([]));
 }
 
-// ====================== HELPER FUNCTIONS ======================
+// ===============================
+// HELPER FUNCTIONS
+// ===============================
 
-function readData(file) {
+function readData(filePath) {
     try {
-        return JSON.parse(fs.readFileSync(file, 'utf8'));
+        const data = fs.readFileSync(filePath, 'utf8');
+        return JSON.parse(data);
     } catch (error) {
         return [];
     }
 }
 
-function writeData(file, data) {
-    fs.writeFileSync(file, JSON.stringify(data, null, 2));
+function writeData(filePath, data) {
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
 
-// ====================== MIDDLEWARE ======================
+// ===============================
+// MIDDLEWARE
+// ===============================
 
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ====================== SERVE FRONTEND FILES ======================
+// ===============================
+// STATIC FILES
+// ===============================
 
 // IMPORTANT:
 // index.html
@@ -68,7 +82,9 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(__dirname));
 
-// ====================== FRONTEND ROUTES ======================
+// ===============================
+// FRONTEND ROUTES
+// ===============================
 
 // Home Page
 app.get('/', (req, res) => {
@@ -80,9 +96,10 @@ app.get('/admin.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'admin.html'));
 });
 
-// ====================== API ROUTES ======================
+// ===============================
+// CONTACT FORM API
+// ===============================
 
-// Contact Form
 app.post('/api/contact', (req, res) => {
 
     try {
@@ -133,7 +150,10 @@ app.post('/api/contact', (req, res) => {
     }
 });
 
-// Booking Form
+// ===============================
+// BOOKING API
+// ===============================
+
 app.post('/api/booking', (req, res) => {
 
     try {
@@ -191,7 +211,10 @@ app.post('/api/booking', (req, res) => {
     }
 });
 
-// Newsletter Subscription
+// ===============================
+// NEWSLETTER API
+// ===============================
+
 app.post('/api/newsletter', (req, res) => {
 
     try {
@@ -201,7 +224,7 @@ app.post('/api/newsletter', (req, res) => {
         if (!email) {
             return res.status(400).json({
                 success: false,
-                message: 'Email required'
+                message: 'Email is required'
             });
         }
 
@@ -243,7 +266,9 @@ app.post('/api/newsletter', (req, res) => {
     }
 });
 
-// ====================== ADMIN API ROUTES ======================
+// ===============================
+// ADMIN APIs
+// ===============================
 
 // Get Contacts
 app.get('/api/contacts', (req, res) => {
@@ -308,13 +333,17 @@ app.get('/api/newsletter', (req, res) => {
     }
 });
 
-// ====================== 404 HANDLER ======================
+// ===============================
+// 404 HANDLER
+// ===============================
 
 app.use((req, res) => {
     res.status(404).sendFile(path.join(__dirname, 'index.html'));
 });
 
-// ====================== START SERVER ======================
+// ===============================
+// START SERVER
+// ===============================
 
 app.listen(PORT, () => {
 
@@ -339,5 +368,3 @@ app.listen(PORT, () => {
 
     console.log('\n====================================\n');
 });
-
-module.exports = app;
